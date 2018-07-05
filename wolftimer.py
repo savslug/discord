@@ -101,7 +101,7 @@ async def on_message(message):
                 m += result
                 await client.send_message(message.author, m)
             else:
-                m = "投票を受け付けました。\n開票までなら変更することもできるよ。"
+                m = args[1]+ "への投票を受け付けました。\n開票までなら変更することもできるよ。"
                 await client.send_message(message.author, m)
         
         #全員投票したら告知
@@ -314,9 +314,9 @@ def get_vote_info():
     m="=======VOTE INFO=======\n"
     for i in w.get_info()["game"]["valid_voters"]:
         target=w.get_info()["players"][i]["vote"]
-        m+="{:<16}".format(i) +"\t->\t"+target
+        m+="{:<16}".format(i) +"\t->\t"+target+"\n"
 
-    m+="\n=======================\n"
+    m+="=======================\n"
     return m
 
 def execute(channel,force=False):
@@ -397,11 +397,11 @@ def quizwolf(end_time, loop, message_channel, precaution_time=None):
             elif precaution_time[-1] < loop.time() + 1.0:
                 if left_time > 60:
                     m = "残り" + str(int(left_time / 60)) + "分です。"
-                elif left_time >= 10:
+                elif left_time >= 5:
                     m = "残り" + str(int(left_time)) + "秒です。"
                 else:
                     #m = str(int(left_time))
-                    m = "残り" + str(int(left_time)) + "秒です。"
+                    m = "制限時間を過ぎました。\n"
                 print(m)
                 print("message_channel", message_channel)
                 # client.send_message(message_channel, m)
@@ -417,7 +417,7 @@ def quizwolf(end_time, loop, message_channel, precaution_time=None):
 
     else:
         print("time is over!")
-        m = "制限時間を過ぎました。\n投票に移ってください。"
+        m = "投票に移ってください。"
         asyncio.ensure_future(playing(""))
         asyncio.ensure_future(send(message_channel, m))
         loop.call_soon(loop.stop)  # 単に loop.stop() でもいい
@@ -465,7 +465,8 @@ def wordwolf(end_time, loop, message_channel, precaution_time=None):
                 elif left_time >= 10:
                     m = "残り" + str(int(left_time)) + "秒です。"
                 else:
-                    m = str(int(left_time))
+                    #m = str(int(left_time))
+                    m = "制限時間を過ぎました。"
                 print(m)
                 print("message_channel", message_channel)
                 # client.send_message(message_channel, m)
@@ -482,7 +483,7 @@ def wordwolf(end_time, loop, message_channel, precaution_time=None):
     else:
         print("time is over!")
         asyncio.ensure_future(playing(""))
-        m = "制限時間を過ぎました。\n投票に移ってください。"
+        m = "投票に移ってください。"
         asyncio.ensure_future(send(message_channel, m))
         # loop.call_soon(loop.stop)  # 単に loop.stop() でもいい
 
