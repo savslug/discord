@@ -87,7 +87,18 @@ async def on_message(message):
             else:
                 m="投票を受け付けました。\n開票までなら変更することもできるよ。"
                 await client.send_message(message.author, m)
+
+    if args[0] in ["wolf","wolfs","wolf_size"]:
+        if argsize<2:
+            m="狼の数を変えるには !wolf [狼の数] だよ。"
+            await client.send_message(message.author, m)
+        else:
+            result=w.set_wolf_size(args[1])
+            m="狼の数を"+str(result)+"人にしました。"
+            await client.send_message(message.author, m)
+
     
+
     if args[0] in ["debug"]:
         m=w.get_info()
         await client.send_message(message.author, m)
