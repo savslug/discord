@@ -96,20 +96,15 @@ async def on_message(message):
                 m = "投票を受け付けました。\n開票までなら変更することもできるよ。"
                 await client.send_message(message.author, m)
 
-<<<<<<< HEAD
-    if args[0] in ["wolf","wolfs","wolf_size"]:
-        if argsize<2:
-            m="狼の数を変えるには !wolf [狼の数] だよ。"
+    if args[0] in ["wolf", "wolfs", "wolf_size"]:
+        if argsize < 2:
+            m = "狼の数を変えるには !wolf [狼の数] だよ。"
             await client.send_message(message.author, m)
         else:
-            result=w.set_wolf_size(args[1])
-            m="狼の数を"+str(result)+"人にしました。"
+            result = w.set_wolf_size(args[1])
+            m = "狼の数を"+str(result)+"人にしました。"
             await client.send_message(message.author, m)
 
-    
-
-=======
->>>>>>> f0cd286280e770f38c614dd7b2e347506a34be79
     if args[0] in ["debug"]:
         m = w.get_info()
         await client.send_message(message.author, m)
@@ -222,7 +217,7 @@ def execute(channel):
     result, executed, role = w.execute()
     if result.startswith("Finish"):
         execute = "処刑"
-        
+
         m = "投票の結果、" + executed+" さんが"+execute+"されました。\n"
         if role == "villager":
             m += executed+" さんは多数派でした。よって、勝者は少数派である\n"
