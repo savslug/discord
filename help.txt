@@ -1,9 +1,11 @@
-Discordワードウルフbot
+===Discordワードウルフbot-HELP===
+!help - これを表示します
 !join - 参加登録をします
 !quit - 参加登録を取り消します
 !lobby - 現在参加登録しているプレイヤーを表示します
+!seed N - Nを次の試合のシード値にします
 !ww N - N分の議論を開始します
-!vote WHO - WHOに投票します
+!vote NAME - NAMEに投票します
 !execute - 処刑を実行します
 !ff - ゲームの結果を全て公開します
 !kill - 議論タイマーを強制終了します[非推奨]

@@ -54,7 +54,9 @@ async def on_message(message):
         f = open('help.txt')
         data = f.read()  # ファイル終端まで全て読んだデータを返す
         f.close()
-        print(data)  # 文字列データ
+        #print(data)  # 文字列データ
+        m+=data
+        await client.send_message(message.channel, m)
 
     if args[0] in ["reset"]:
 
@@ -76,7 +78,8 @@ async def on_message(message):
         await client.send_message(message.author, m)
 
     if args[0] in ["lobby"]:
-        m = "参加者: " + str(len(w.players)) + "人\n"
+        m="次回シード:"+str(w.seed)+"\n狼人数:"+str(w.wolf_size)+"\n"
+        m += "参加者: " + str(len(w.players)) + "\n"
         for i in w.players:
             m += i
             m += "\n"
@@ -87,6 +90,11 @@ async def on_message(message):
             m = "投票コマンドは !vote [相手のユーザー名] だよ。"
             await client.send_message(message.author, m)
         else:
+            #プレイヤーの中に存在しない投票先だった場合、
+            #ニックネーム辞書を使ってみる
+            if args[1] not in w.players:
+                args[1]=nickname(args[1])
+
             result = w.vote(message.author.name, args[1])
             if result != "OK":
                 m = "投票は受け付けられませんでした。\n"
@@ -95,22 +103,37 @@ async def on_message(message):
             else:
                 m = "投票を受け付けました。\n開票までなら変更することもできるよ。"
                 await client.send_message(message.author, m)
+        
+        #全員投票したら告知
+        if w.unvoters==[]:
+            force_break=True
+            m="全員の投票を確認しました。\n5秒後に開票します。"
+            await client.send_message(message.channel, m)
+            loop.call_later(5, execute, message.channel)
+            #loop.call_later(2, wordwolf, end_time, loop, message.channel, [])
 
     if args[0] in ["wolf", "wolfs", "wolf_size"]:
         if argsize < 2:
             m = "狼の数を変えるには !wolf [狼の数] だよ。"
-            await client.send_message(message.author, m)
+            await client.send_message(message.channel, m)
         else:
-            result = w.set_wolf_size(args[1])
-            m = "狼の数を"+str(result)+"人にしました。"
-            await client.send_message(message.author, m)
+            try:
+                result = w.set_wolf_size(int(args[1]))
+                m = "狼の数を"+str(result)+"人にしました。"
+            except Exception:
+                m="ｱﾜﾜﾜ...(整数を入力してください)"
+            await client.send_message(message.channel, m)
 
     if args[0] in ["debug"]:
         m = w.get_info()
         await client.send_message(message.author, m)
 
     if args[0] in ["execute"]:
-        execute(message.channel)
+        execute(message.channel,False)
+
+    if args[0] in ["execute!"]:
+        execute(message.channel,True)
+        
 
     if args[0] in ["seed"]:
         if argsize < 2:
@@ -130,6 +153,12 @@ async def on_message(message):
             m = "参加者0人"
             await client.send_message(message.channel, m)
             return
+
+        if len(w.players) < w.wolf_size:
+            m="指定された狼人数("+str(w.wolf_size)+")が参加者数("+str(len(w.players))+")を超えています。\n"
+            await client.send_message(message.channel, m)
+            return
+
         if client.user != message.author:
             given_time = 1
             if(argsize > 1):
@@ -172,6 +201,26 @@ async def on_message(message):
             loop.call_soon(quizwolf, end_time, loop, message.channel)
             await client.send_message(message.channel, m)
 
+    if args[0] in ["nickname"]:
+        if argsize < 3:
+            m = "ニックネームの追加は !nickname [真名] [ニックネーム] だよ。"
+            await client.send_message(message.channel, m)
+        else:
+            add_nickname(args[1],args[2])
+            m = "ニックネームを追加しました。"
+            await client.send_message(message.channel, m)
+
+    if args[0] in ["shownick"]:
+        if argsize < 2:
+            m = "ニックネームの確認は !shownick [ニックネーム] だよ。"
+            await client.send_message(message.channel, m)
+        if args[1]==nickname(args[1]):
+            m="そのニックネームは登録されてないよ。"
+            await client.send_message(message.channel, m)
+            return
+        m="ニックネーム変換: "+args[1] +"\t->\t"+ nickname(args[1])
+        await client.send_message(message.channel, m)
+
     if args[0] in ["stop"]:
         force_break = True
         print(given_time, ql_time)
@@ -189,7 +238,8 @@ async def on_message(message):
         await client.send_message(message.channel, m)
 
     if args[0] in ["finish", "ff"]:
-        finish()
+        finish(message.channel)
+
 
 import time
 
@@ -203,30 +253,90 @@ async def send(channel, message):
 async def playing(txt):
     await client.change_presence(game=discord.Game(name=txt))
 
+def nickname(nick):
+    import pickle
+    """
+    ニックネームから正しいユーザー名を得る
+    """
+    nickname={}
+    with open("pickles/nickname.pickle",mode="rb") as f:
+        nickname=pickle.load(f)
+    try:
+        return nickname[nick]
+    except:
+        return nick
 
-def finish():
+def add_nickname(true,nick):
+    import pickle
+    """
+    ニックネーム辞書に追加する
+    """
+    nickname={}
+    with open("pickles/nickname.pickle",mode="rb") as f:
+        nickname=pickle.load(f)
+    nickname[nick]=true
+    with open("pickles/nickname.pickle",mode="wb") as f:
+        pickle.dump(nickname,f)   
+    return 
+
+def finish(channel):
     info = w.get_info()
-    m = "多数派は「" + info["game"]["theme"][0] + \
+    if info=={}:
+        m="ゲーム記録が存在しません...ｱﾜﾜﾜ"
+        asyncio.ensure_future(send(channel,m))
+        return
+
+    #print(info["game"]["theme"])
+    theme = "多数派は「" + info["game"]["theme"][0] + \
         "」\n少数派は「" + info["game"]["theme"][1] + "」\n"
-    m +=
+    wolfs="狼は"
+    for i in w.players:
+        if info["players"][i]["role"]=="wolf":
+            wolfs+=i
+            wolfs+=" "
 
+    m = "\nでした。ゲームを終了します。"
+    asyncio.ensure_future(send(channel, theme+wolfs+m))
 
-def execute(channel):
+def get_vote_info():
+    """
+    infoから投票情報の文字列を作成
+    """
+    max_len=0
+    for i in w.get_info()["game"]["valid_voters"]:
+        max_len=max(max_len,len(i))
+    
+    m="=======VOTE INFO=======\n"
+    for i in w.get_info()["game"]["valid_voters"]:
+        target=w.get_info()["players"][i]["vote"]
+        m+="{:<16}".format(i) +"\t->\t"+target
+
+    m+="\n=======================\n"
+    return m
+
+def execute(channel,force=False):
     global force_break
     force_break = True
-    result, executed, role = w.execute()
-    if result.startswith("Finish"):
+    result, executed, role = w.execute(force)
+    if result.startswith("Finish") or force:
         execute = "処刑"
 
-        m = "投票の結果、" + executed+" さんが"+execute+"されました。\n"
+        m=get_vote_info()
+        if force==True:
+            print("forced execute!")
+            m+="処刑が強行されました。"
+    
+        m += "投票の結果、" + executed+" さんが"+execute+"されました。\n"
         if role == "villager":
             m += executed+" さんは多数派でした。よって、勝者は少数派である\n"
             for i in w.wolfs:
                 m += i
                 m += " さん\n"
             m += "に確定しました。"
+            #m+="ゲームを終了します。"
         else:
-            m += executed+" さんは少数派でした。\n多数派のお題を言い当てれば逆転勝利だよ。（未実装）"
+            m += executed+" さんは少数派でした。\n多数派のお題を言い当てれば逆転勝利だよ。（未実装）\n"
+            #m+="ゲームを終了します。"
     elif result.startswith("Tie"):
         m = "投票の結果、処刑対象を一人に絞れませんでした。\n最多得票者は\n"
         for i in executed:
@@ -240,7 +350,6 @@ def execute(channel):
         m = "未投票の人がいます。"
 
     asyncio.ensure_future(send(channel, m))
-
 
 def quizwolf(end_time, loop, message_channel, precaution_time=None):
     left_time = end_time - loop.time()

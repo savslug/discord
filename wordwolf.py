@@ -122,7 +122,7 @@ class WordWolf():
         #print(self.players)
         return "OK"
         
-    def execute(self):
+    def execute(self,force=False):
         if self.state!="theme_discussion":
             return("this is not the time","","")
         #reset vote count
@@ -141,7 +141,7 @@ class WordWolf():
             else:
                 self.info["players"][target]["count"]+=1
                 
-        if unvoters!=[]:
+        if unvoters!=[] and not force:
             self.please_vote(self.unvoters)
             return "Unvoters",len(unvoters),""
         
@@ -155,7 +155,7 @@ class WordWolf():
             elif value["count"]==max_vote:
                 target.append(player)
                 
-        if len(target)==1:
+        if len(target)==1 or force:
             #successfully executed
             target=target[0]
             winner=""
