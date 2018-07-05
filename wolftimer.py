@@ -242,7 +242,7 @@ async def on_message(message):
         await client.send_message(message.channel, m)
         quit()
 
-    if args[0] in ["finish", "ff"]:
+    if args[0] in ["finish", "fa"]:
         finish(message.channel)
 
 
