@@ -237,6 +237,11 @@ async def on_message(message):
         m = "完了"
         await client.send_message(message.channel, m)
 
+    if args[0] in ["debugkill"]:
+        m = "プロセスを終了します。"
+        await client.send_message(message.channel, m)
+        quit()
+
     if args[0] in ["finish", "ff"]:
         finish(message.channel)
 
