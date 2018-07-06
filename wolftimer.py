@@ -314,7 +314,7 @@ def get_vote_info():
     m="=======VOTE INFO=======\n"
     for i in w.get_info()["game"]["valid_voters"]:
         target=w.get_info()["players"][i]["vote"]
-        m+="{:<16}".format(i) +"\t->\t"+target+"\n"
+        m+=i +"\t->\t"+target+"\n"
 
     m+="=======================\n"
     return m
