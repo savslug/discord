@@ -172,6 +172,7 @@ class WordWolf():
             self.info["game"]["valid_voters"]=list(set(self.players)-set(target))
             if self.info["game"]["valid_voters"]==[]:
                 self.info["game"]["valid_voters"]=copy.deepcopy(self.info["game"]["valid_targets"])
+            self.unvoters=copy.deepcopy(self.info["game"]["valid_voters"])
             return "Tie",target,""
             
     def please_vote(self,unvoters):
