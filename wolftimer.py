@@ -10,6 +10,8 @@ notice_time = [1, 10, 30, 60, 120, 180, 240, 300, 420, 540]
 force_break = False
 given_time = 0
 ql_time = 0
+#ゲームが開催されているチャンネルを保存
+game_channel=None
 
 dm_address = {}
 
@@ -29,6 +31,7 @@ async def on_message(message):
     global force_break
     global given_time
     global ql_time
+    global game_channel
     force_break = False
     # 「おはよう」で始まるか調べる
     if message.content.startswith("おはよう"):
@@ -108,8 +111,8 @@ async def on_message(message):
         if w.unvoters==[]:
             force_break=True
             m="全員の投票を確認しました。\n5秒後に開票します。"
-            await client.send_message(message.channel, m)
-            loop.call_later(5, execute, message.channel)
+            await client.send_message(game_channel, m)
+            loop.call_later(5, execute, game_channel)
             #loop.call_later(2, wordwolf, end_time, loop, message.channel, [])
 
     if args[0] in ["wolf", "wolfs", "wolf_size"]:
@@ -149,6 +152,7 @@ async def on_message(message):
             await client.send_message(message.channel, m)
 
     if args[0] in ["wordwolf", "ww"]:
+        game_channel=message.channel
         if len(w.players) == 0:
             m = "参加者0人"
             await client.send_message(message.channel, m)
