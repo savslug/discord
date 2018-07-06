@@ -342,9 +342,12 @@ def execute(channel,force=False):
                 m += i
                 m += " さん\n"
             m += "に確定しました。"
+            asyncio.ensure_future(send(channel, m))
+            finish(channel)
             #m+="ゲームを終了します。"
         else:
-            m += executed+" さんは少数派でした。\n多数派のお題を言い当てれば逆転勝利だよ。（未実装）\n"
+            m += executed+" さんは少数派でした。\nテーマは「"+w.info["game"]["theme"][1]+"」です。\n多数派のお題を言い当てれば逆転勝利だよ。（未実装）\n"
+            asyncio.ensure_future(send(channel, m))
             #m+="ゲームを終了します。"
     elif result.startswith("Tie"):
         m = "投票の結果、処刑対象を一人に絞れませんでした。\n最多得票者は\n"
@@ -352,13 +355,13 @@ def execute(channel,force=False):
             m += i
             m += " さん\n"
         m += "です。2分間の再議論の後、\nもう一度投票してください。"
+        asyncio.ensure_future(send(channel, m))
         end_time = loop.time() + 120
         loop.call_later(2, wordwolf, end_time, loop, channel)
     else:
         force_break = False
         m = "未投票の人がいます。"
-
-    asyncio.ensure_future(send(channel, m))
+        asyncio.ensure_future(send(channel, m))
 
 def quizwolf(end_time, loop, message_channel, precaution_time=None):
     left_time = end_time - loop.time()
