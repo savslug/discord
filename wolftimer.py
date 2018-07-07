@@ -350,7 +350,7 @@ def execute(channel,force=False):
             asyncio.ensure_future(send(channel, m))
             #m+="ゲームを終了します。"
     elif result.startswith("Tie"):
-        m = "投票の結果、処刑対象を一人に絞れませんでした。\n最多得票者は\n"
+        m += "投票の結果、処刑対象を一人に絞れませんでした。\n最多得票者は\n"
         for i in executed:
             m += i
             m += " さん\n"

@@ -180,7 +180,7 @@ class WordWolf():
         return "please vote submitted"
     
     
-    def choose_theme(self):
+    def choose_theme(self,category=None):
         import urllib.request
         import json
 
