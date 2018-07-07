@@ -48,6 +48,7 @@ async def on_message(message):
     argsize = 0
     if message.content.startswith("!"):
         args = message.content.split(" ")
+        #args=args.content.split("　")
         args[0] = args[0][1:]
         argsize = len(args)
         print(args)
@@ -154,9 +155,17 @@ async def on_message(message):
     if args[0] in ["category","cat"]:
         #カテゴリー選択
         if argsize < 2:
-            m = "カテゴリを初期化しました。\nカテゴリの指定は !category [カテゴリ名] だよ。"
+            m = "出題カテゴリを初期化しました。\nカテゴリの指定は !category [カテゴリ名] だよ。"
             await client.send_message(message.channel, m)
-        w.set_categories(args[1:])
+        else:
+            m="出題カテゴリを"
+            for i in args[1:]:
+                m+=i
+                m+=","
+            m=m[:-1]
+            m+="に設定しました。初期化する場合は!catだよ。"
+            await client.send_message(message.channel, m)
+            w.set_categories(args[1:])
 
 
     if args[0] in ["wordwolf", "ww"]:
@@ -178,6 +187,13 @@ async def on_message(message):
             given_time *= 60
             m = "ワードウルフを始めます。\n議論の制限時間は" + \
                 str(int(given_time / 60)) + "分です。\nDMから自分のテーマを確認してね。"
+            if w.categories!=[]:
+                m+="\nカテゴリ: "
+                for i in w.categories:
+                    m+=i
+                    m+=","
+                m=m[:-1]
+
             await client.send_message(message.channel, m)
 
             w.start()
@@ -245,7 +261,6 @@ async def on_message(message):
         force_break = True
         m = "実行中のゲームを終了します..."
         await client.send_message(message.channel, m)
-        time.sleep(1)
         m = "完了"
         await client.send_message(message.channel, m)
 
