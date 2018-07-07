@@ -151,6 +151,14 @@ async def on_message(message):
             m = "シード値を "+args[1]+" に設定しました。"
             await client.send_message(message.channel, m)
 
+    if args[0] in ["category","cat"]:
+        #カテゴリー選択
+        if argsize < 2:
+            m = "カテゴリを初期化しました。\nカテゴリの指定は !category [カテゴリ名] だよ。"
+            await client.send_message(message.channel, m)
+        w.set_categories(args[1:])
+
+
     if args[0] in ["wordwolf", "ww"]:
         game_channel=message.channel
         if len(w.players) == 0:

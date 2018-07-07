@@ -11,6 +11,7 @@ class WordWolf():
         self.wolf_size=1
         self.info={}
         self.theme=None
+        self.categories=[]
 
     def kill(self):
         self.state="accepting_player"
@@ -19,6 +20,7 @@ class WordWolf():
         self.wolf_size=1
         self.info={}
         self.theme=None
+        self.categories=[]
         
     def add_player(self,player_name):
         if self.state!="accepting_player":
@@ -55,7 +57,11 @@ class WordWolf():
             return("this is not a time")
         self.wolf_size=new
         return(self.wolf_size)
-    
+
+    def set_categories(self,cat):
+        self.categories=cat
+        return self.categories
+
     def start(self,):
         print("STARTnewseed",self.seed)
         if self.state!="accepting_player":
@@ -68,7 +74,7 @@ class WordWolf():
         self.wolfs=random.sample(self.players,self.wolf_size)
         
         #choose theme
-        self.theme=self.choose_theme()
+        self.theme=self.choose_theme(self.categories)
         
         #create player_info
         self.initialize_info()
