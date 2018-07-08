@@ -48,7 +48,11 @@ async def on_message(message):
     argsize = 0
     if message.content.startswith("!"):
         args = message.content.split(" ")
+<< << << < HEAD
         # args=args.content.split("　")
+== == == =
+        # args=args.content.split("　")
+>>>>>> > cc3f9d2896a95c95c9c0e6420f23c65ba01098e4
         args[0] = args[0][1:]
         argsize = len(args)
         print(args)
@@ -114,7 +118,7 @@ async def on_message(message):
             m = "全員の投票を確認しました。\n5秒後に開票します。"
             await client.send_message(game_channel, m)
             loop.call_later(5, execute, game_channel)
-            #loop.call_later(2, wordwolf, end_time, loop, message.channel, [])
+            # loop.call_later(2, wordwolf, end_time, loop, message.channel, [])
 
     if args[0] in ["wolf", "wolfs", "wolf_size"]:
         if argsize < 2:
@@ -438,7 +442,7 @@ def quizwolf(end_time, loop, message_channel, precaution_time=None):
                 elif left_time >= 5:
                     m = "残り" + str(int(left_time)) + "秒です。"
                 else:
-                    #m = str(int(left_time))
+                    # m = str(int(left_time))
                     m = "制限時間を過ぎました。\n"
                 print(m)
                 print("message_channel", message_channel)
@@ -503,7 +507,7 @@ def wordwolf(end_time, loop, message_channel, precaution_time=None):
                 elif left_time >= 10:
                     m = "残り" + str(int(left_time)) + "秒です。"
                 else:
-                    #m = str(int(left_time))
+                    # m = str(int(left_time))
                     m = "制限時間を過ぎました。"
                 print(m)
                 print("message_channel", message_channel)
@@ -529,7 +533,7 @@ def wordwolf(end_time, loop, message_channel, precaution_time=None):
 loop = asyncio.get_event_loop()
 
 # Schedule the first call to wordwolf()
-#end_time = loop.time() + 5.0
+# end_time = loop.time() + 5.0
 # loop.call_soon(wordwolf, end_time, loop)
 
 # Blocking call interrupted by loop.stop()

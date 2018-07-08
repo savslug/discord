@@ -70,14 +70,14 @@ class WordWolf():
 
         self.player_size = len(self.players)
 
-        #choose wolf randomly
+        # choose wolf randomly
         random.seed(self.seed)
         self.wolfs = random.sample(self.players, self.wolf_size)
 
-        #choose theme
+        # choose theme
         self.theme = self.choose_theme(self.categories)
 
-        #create player_info
+        # create player_info
         self.initialize_info()
 
         self.state = "theme_discussion"
@@ -97,7 +97,7 @@ class WordWolf():
                                  "theme": self.theme,
                                  "valid_targets": copy.deepcopy(self.players),
                                  "valid_voters": copy.deepcopy(self.players)}
-        #print(self.players)
+        # print(self.players)
 
     def show_info(self):
         print(self.info)
@@ -125,22 +125,22 @@ class WordWolf():
         self.info["players"][who]["vote"] = target
         if who in self.unvoters:
             self.unvoters.remove(who)
-        #print(self.players)
+        # print(self.players)
         return "OK"
 
     def execute(self, force=False):
         if self.state != "theme_discussion":
             return("this is not the time", "", "")
-        #reset vote count
+        # reset vote count
         for player, value in self.info["players"].items():
-            #print(player)
+            # print(player)
             value["count"] = 0
-        #count votes
+        # count votes
         unvoters = []
         for player, value in self.info["players"].items():
             if player not in self.info["game"]["valid_voters"]:
                 continue
-            #print(player)
+            # print(player)
             target = value["vote"]
             if target == "":
                 unvoters.append(player)
@@ -151,7 +151,7 @@ class WordWolf():
             self.please_vote(self.unvoters)
             return "Unvoters", len(unvoters), ""
 
-        #全員の投票が確認できたら
+        # 全員の投票が確認できたら
         max_vote = 0
         target = []
         for player, value in self.info["players"].items():
@@ -162,7 +162,7 @@ class WordWolf():
                 target.append(player)
 
         if len(target) == 1 or force:
-            #successfully executed
+            # successfully executed
             target = target[0]
             winner = ""
             if self.info["players"][target]["role"] == "villager":
@@ -173,7 +173,7 @@ class WordWolf():
             self.seed = random.randint(0, 10000000000000000)
             return "Finish", target, self.info["players"][target]["role"]
         else:
-            #同数
+            # 同数
             self.info["game"]["valid_targets"] = target
             self.info["game"]["valid_voters"] = list(
                 set(self.players) - set(target))
@@ -199,28 +199,28 @@ class WordWolf():
         data = json.loads(data)
         data = list(filter(lambda str: str != '', data))
         row, col = np.array(data).shape
-        #print(row,col)
+        # print(row,col)
         for i in range(row):
             data[i] = list(filter(lambda str: str != '', data[i]))
 
-        #pprint(data)
+        # pprint(data)
 
         random.seed(self.seed)
         theme = ["#combined"]
         if categories == None:
             theme = random.sample(data, 1)[0]
         else:
-            #カテゴリが指定されていたらそれを検索
+            # カテゴリが指定されていたらそれを検索
             for i in data:
                 if i[0][1:] in categories:
                     theme += i[1:]
         print(theme)
-        #print(theme)
+        # print(theme)
         if theme == ["#combined"]:
-            #カテゴリ選択に失敗したら
+            # カテゴリ選択に失敗したら
             self.categories = []
             theme = random.sample(data, 1)[0]
         theme = random.sample(theme[1:], 2)
-        #print(theme)
+        # print(theme)
 
         return theme
