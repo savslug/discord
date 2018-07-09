@@ -48,11 +48,7 @@ async def on_message(message):
     argsize = 0
     if message.content.startswith("!"):
         args = message.content.split(" ")
-<< << << < HEAD
-        # args=args.content.split("　")
-== == == =
-        # args=args.content.split("　")
->>>>>> > cc3f9d2896a95c95c9c0e6420f23c65ba01098e4
+
         args[0] = args[0][1:]
         argsize = len(args)
         print(args)
@@ -98,11 +94,8 @@ async def on_message(message):
         await client.send_message(message.author, m)
 
     if args[0] in ["lobby"]:
-<<<<<<< HEAD
+
         m="シード:"+str(w.seed)+"\n狼人数:"+str(w.wolf_size)+"\n"
-=======
-        m = "次回シード:" + str(w.seed) + "\n狼人数:" + str(w.wolf_size) + "\n"
->>>>>>> ad0b19fd86dbcb8545a17e5ca8b660001559994f
         m += "参加者: " + str(len(w.players)) + "\n"
         for i in w.players:
             m += i
@@ -161,7 +154,6 @@ async def on_message(message):
         await client.send_message(message.author, m)
 
     if args[0] in ["execute"]:
-<<<<<<< HEAD
         if w.state!="theme_discussion":
             m="そのコマンドはゲーム中にしか実行できないよ。"
             await client.send_message(message.channel, m)
@@ -174,13 +166,6 @@ async def on_message(message):
             await client.send_message(message.channel, m)
             return
         execute(message.channel,True)
-        
-=======
-        execute(message.channel, False)
-
-    if args[0] in ["execute!"]:
-        execute(message.channel, True)
->>>>>>> ad0b19fd86dbcb8545a17e5ca8b660001559994f
 
     if args[0] in ["seed"]:
         if w.state!="accepting_player":
@@ -199,17 +184,13 @@ async def on_message(message):
             m = "シード値を " + args[1] + " に設定しました。"
             await client.send_message(message.channel, m)
 
-<<<<<<< HEAD
     if args[0] in ["category","cat"]:
         if w.state!="accepting_player":
             m="そのコマンドは参加者受付中にしか実行できないよ。"
             await client.send_message(message.channel, m)
             return
         #カテゴリー選択
-=======
-    if args[0] in ["category", "cat"]:
-        # カテゴリー選択
->>>>>>> ad0b19fd86dbcb8545a17e5ca8b660001559994f
+
         if argsize < 2:
             w.set_categories(None)
             m = "出題カテゴリを初期化しました。\nカテゴリの指定は !category [カテゴリ名] だよ。"
@@ -225,15 +206,12 @@ async def on_message(message):
             w.set_categories(args[1:])
 
     if args[0] in ["wordwolf", "ww"]:
-<<<<<<< HEAD
         if w.state!="accepting_player":
             m="そのコマンドは参加者受付中にしか実行できないよ。"
             await client.send_message(message.channel, m)
             return
         game_channel=message.channel
-=======
-        game_channel = message.channel
->>>>>>> ad0b19fd86dbcb8545a17e5ca8b660001559994f
+
         if len(w.players) == 0:
             m = "参加者0人"
             await client.send_message(message.channel, m)
