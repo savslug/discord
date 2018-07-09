@@ -48,11 +48,6 @@ async def on_message(message):
     argsize = 0
     if message.content.startswith("!"):
         args = message.content.split(" ")
-<< << << < HEAD
-        # args=args.content.split("　")
-== == == =
-        # args=args.content.split("　")
->>>>>> > cc3f9d2896a95c95c9c0e6420f23c65ba01098e4
         args[0] = args[0][1:]
         argsize = len(args)
         print(args)
