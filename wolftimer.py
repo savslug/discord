@@ -48,6 +48,10 @@ async def on_message(message):
     argsize = 0
     if message.content.startswith("!"):
         args = message.content.split(" ")
+<<<<<<< HEAD
+=======
+
+>>>>>>> dc77711b33757338167ead8126e81d40e80ae6d2
         args[0] = args[0][1:]
         argsize = len(args)
         print(args)
@@ -62,12 +66,20 @@ async def on_message(message):
         await client.send_message(message.channel, m)
 
     if args[0] in ["reset"]:
+        if w.state!="accepting_player":
+            m="そのコマンドは参加者受付中にしか実行できないよ。"
+            await client.send_message(message.channel, m)
+            return
 
         w.reset_player()
         m = "リセットしました。\n参加するプレイヤーは !join を入力してください。\n!ww でゲームを開始します。"
         await client.send_message(message.channel, m)
 
     if args[0] in ["join"]:
+        if w.state!="accepting_player":
+            m="そのコマンドは参加者受付中にしか実行できないよ。"
+            await client.send_message(message.channel, m)
+            return
         w.add_player(message.author.name)
         dm_address[message.author.name] = message.author
         m = "参加を受け付けました。\n議論後はここで投票してね。\n参加を取り消す場合は !quit を入力してください。"
@@ -75,13 +87,18 @@ async def on_message(message):
         await client.send_message(message.author, m)
 
     if args[0] in ["quit"]:
+        if w.state!="accepting_player":
+            m="そのコマンドは参加者受付中にしか実行できないよ。"
+            await client.send_message(message.channel, m)
+            return
         w.remove_player(message.author.name)
         m = "参加を取り消しました。"
         print(w.players)
         await client.send_message(message.author, m)
 
     if args[0] in ["lobby"]:
-        m = "次回シード:" + str(w.seed) + "\n狼人数:" + str(w.wolf_size) + "\n"
+
+        m="シード:"+str(w.seed)+"\n狼人数:"+str(w.wolf_size)+"\n"
         m += "参加者: " + str(len(w.players)) + "\n"
         for i in w.players:
             m += i
@@ -89,6 +106,10 @@ async def on_message(message):
         await client.send_message(message.channel, m)
 
     if args[0] in ["vote"]:
+        if w.state!="theme_discussion":
+            m="そのコマンドはゲーム中にしか実行できないよ。"
+            await client.send_message(message.channel, m)
+            return
         if argsize < 2:
             m = "投票コマンドは !vote [相手のユーザー名] だよ。"
             await client.send_message(message.author, m)
@@ -116,6 +137,10 @@ async def on_message(message):
             # loop.call_later(2, wordwolf, end_time, loop, message.channel, [])
 
     if args[0] in ["wolf", "wolfs", "wolf_size"]:
+        if w.state!="accepting_player":
+            m="そのコマンドは参加者受付中にしか実行できないよ。"
+            await client.send_message(message.channel, m)
+            return
         if argsize < 2:
             m = "狼の数を変えるには !wolf [狼の数] だよ。"
             await client.send_message(message.channel, m)
@@ -132,12 +157,24 @@ async def on_message(message):
         await client.send_message(message.author, m)
 
     if args[0] in ["execute"]:
-        execute(message.channel, False)
+        if w.state!="theme_discussion":
+            m="そのコマンドはゲーム中にしか実行できないよ。"
+            await client.send_message(message.channel, m)
+            return
+        execute(message.channel,False)
 
     if args[0] in ["execute!"]:
-        execute(message.channel, True)
+        if w.state!="theme_discussion":
+            m="そのコマンドはゲーム中にしか実行できないよ。"
+            await client.send_message(message.channel, m)
+            return
+        execute(message.channel,True)
 
     if args[0] in ["seed"]:
+        if w.state!="accepting_player":
+            m="そのコマンドは参加者受付中にしか実行できないよ。"
+            await client.send_message(message.channel, m)
+            return
         if argsize < 2:
             m = "シード値の指定は !seed [呪文] だよ。"
             await client.send_message(message.channel, m)
@@ -150,8 +187,13 @@ async def on_message(message):
             m = "シード値を " + args[1] + " に設定しました。"
             await client.send_message(message.channel, m)
 
-    if args[0] in ["category", "cat"]:
-        # カテゴリー選択
+    if args[0] in ["category","cat"]:
+        if w.state!="accepting_player":
+            m="そのコマンドは参加者受付中にしか実行できないよ。"
+            await client.send_message(message.channel, m)
+            return
+        #カテゴリー選択
+
         if argsize < 2:
             w.set_categories(None)
             m = "出題カテゴリを初期化しました。\nカテゴリの指定は !category [カテゴリ名] だよ。"
@@ -167,7 +209,12 @@ async def on_message(message):
             w.set_categories(args[1:])
 
     if args[0] in ["wordwolf", "ww"]:
-        game_channel = message.channel
+        if w.state!="accepting_player":
+            m="そのコマンドは参加者受付中にしか実行できないよ。"
+            await client.send_message(message.channel, m)
+            return
+        game_channel=message.channel
+
         if len(w.players) == 0:
             m = "参加者0人"
             await client.send_message(message.channel, m)
@@ -258,8 +305,10 @@ async def on_message(message):
 
     if args[0] in ["kill"]:
         force_break = True
+        print(force_break)
         m = "実行中のゲームを終了します..."
         await client.send_message(message.channel, m)
+        print(force_break)
         m = "完了"
         await client.send_message(message.channel, m)
 
@@ -466,8 +515,8 @@ def wordwolf(end_time, loop, message_channel, precaution_time=None):
 
     global force_break
     if force_break == True:
-        force_break = False
         asyncio.ensure_future(playing(""))
+        print("wordwolf: killed")
         return
 
     # 初回起動時
