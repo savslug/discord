@@ -62,8 +62,8 @@ async def on_message(message):
         await client.send_message(message.channel, m)
 
     if args[0] in ["reset"]:
-        if w.state!="accepting_player":
-            m="そのコマンドは参加者受付中にしか実行できないよ。"
+        if w.state != "accepting_player":
+            m = "そのコマンドは参加者受付中にしか実行できないよ。"
             await client.send_message(message.channel, m)
             return
 
@@ -72,8 +72,8 @@ async def on_message(message):
         await client.send_message(message.channel, m)
 
     if args[0] in ["join"]:
-        if w.state!="accepting_player":
-            m="そのコマンドは参加者受付中にしか実行できないよ。"
+        if w.state != "accepting_player":
+            m = "そのコマンドは参加者受付中にしか実行できないよ。"
             await client.send_message(message.channel, m)
             return
         w.add_player(message.author.name)
@@ -83,8 +83,8 @@ async def on_message(message):
         await client.send_message(message.author, m)
 
     if args[0] in ["quit"]:
-        if w.state!="accepting_player":
-            m="そのコマンドは参加者受付中にしか実行できないよ。"
+        if w.state != "accepting_player":
+            m = "そのコマンドは参加者受付中にしか実行できないよ。"
             await client.send_message(message.channel, m)
             return
         w.remove_player(message.author.name)
@@ -94,7 +94,7 @@ async def on_message(message):
 
     if args[0] in ["lobby"]:
 
-        m="シード:"+str(w.seed)+"\n狼人数:"+str(w.wolf_size)+"\n"
+        m = "シード:" + str(w.seed) + "\n狼人数:" + str(w.wolf_size) + "\n"
         m += "参加者: " + str(len(w.players)) + "\n"
         for i in w.players:
             m += i
@@ -102,8 +102,8 @@ async def on_message(message):
         await client.send_message(message.channel, m)
 
     if args[0] in ["vote"]:
-        if w.state!="theme_discussion":
-            m="そのコマンドはゲーム中にしか実行できないよ。"
+        if w.state != "theme_discussion":
+            m = "そのコマンドはゲーム中にしか実行できないよ。"
             await client.send_message(message.channel, m)
             return
         if argsize < 2:
@@ -133,8 +133,8 @@ async def on_message(message):
             # loop.call_later(2, wordwolf, end_time, loop, message.channel, [])
 
     if args[0] in ["wolf", "wolfs", "wolf_size"]:
-        if w.state!="accepting_player":
-            m="そのコマンドは参加者受付中にしか実行できないよ。"
+        if w.state != "accepting_player":
+            m = "そのコマンドは参加者受付中にしか実行できないよ。"
             await client.send_message(message.channel, m)
             return
         if argsize < 2:
@@ -153,22 +153,22 @@ async def on_message(message):
         await client.send_message(message.author, m)
 
     if args[0] in ["execute"]:
-        if w.state!="theme_discussion":
-            m="そのコマンドはゲーム中にしか実行できないよ。"
+        if w.state != "theme_discussion":
+            m = "そのコマンドはゲーム中にしか実行できないよ。"
             await client.send_message(message.channel, m)
             return
-        execute(message.channel,False)
+        execute(message.channel, False)
 
     if args[0] in ["execute!"]:
-        if w.state!="theme_discussion":
-            m="そのコマンドはゲーム中にしか実行できないよ。"
+        if w.state != "theme_discussion":
+            m = "そのコマンドはゲーム中にしか実行できないよ。"
             await client.send_message(message.channel, m)
             return
-        execute(message.channel,True)
+        execute(message.channel, True)
 
     if args[0] in ["seed"]:
-        if w.state!="accepting_player":
-            m="そのコマンドは参加者受付中にしか実行できないよ。"
+        if w.state != "accepting_player":
+            m = "そのコマンドは参加者受付中にしか実行できないよ。"
             await client.send_message(message.channel, m)
             return
         if argsize < 2:
@@ -183,12 +183,12 @@ async def on_message(message):
             m = "シード値を " + args[1] + " に設定しました。"
             await client.send_message(message.channel, m)
 
-    if args[0] in ["category","cat"]:
-        if w.state!="accepting_player":
-            m="そのコマンドは参加者受付中にしか実行できないよ。"
+    if args[0] in ["category", "cat"]:
+        if w.state != "accepting_player":
+            m = "そのコマンドは参加者受付中にしか実行できないよ。"
             await client.send_message(message.channel, m)
             return
-        #カテゴリー選択
+        # カテゴリー選択
 
         if argsize < 2:
             w.set_categories(None)
@@ -205,11 +205,11 @@ async def on_message(message):
             w.set_categories(args[1:])
 
     if args[0] in ["wordwolf", "ww"]:
-        if w.state!="accepting_player":
-            m="そのコマンドは参加者受付中にしか実行できないよ。"
+        if w.state != "accepting_player":
+            m = "そのコマンドは参加者受付中にしか実行できないよ。"
             await client.send_message(message.channel, m)
             return
-        game_channel=message.channel
+        game_channel = message.channel
 
         if len(w.players) == 0:
             m = "参加者0人"
@@ -580,4 +580,7 @@ loop = asyncio.get_event_loop()
 # loop.close()
 
 # token にDiscordのデベロッパサイトで取得したトークンを入れてください
-client.run("NDYzNjMzNjk5Mzg1MTE0NjI0.Dh0UdA.DnYYeJmy7Rrywcjc9KTxnjAAvwM")
+token = ""
+with open("token.txt") as f:
+    token = f.read()
+client.run(token)
