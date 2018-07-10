@@ -48,10 +48,6 @@ async def on_message(message):
     argsize = 0
     if message.content.startswith("!"):
         args = message.content.split(" ")
-<<<<<<< HEAD
-=======
-
->>>>>>> dc77711b33757338167ead8126e81d40e80ae6d2
         args[0] = args[0][1:]
         argsize = len(args)
         print(args)
@@ -403,10 +399,9 @@ def execute(channel, force=False):
     global force_break
     force_break = True
     result, executed, role = w.execute(force)
+    m = get_vote_info()
     if result.startswith("Finish") or force:
         execute = "処刑"
-
-        m = get_vote_info()
         if force == True:
             print("forced execute!")
             m += "処刑が強行されました。"
