@@ -104,6 +104,8 @@ async def on_message(message):
     if args[0] in ["vote"]:
         if w.state != "theme_discussion":
             m = "そのコマンドはゲーム中にしか実行できないよ。"
+            if args[1] in ["felmac", "gesu", "ゲス"]:
+                m = message.author.name+"を処刑しました"
             await client.send_message(message.channel, m)
             return
         if argsize < 2:
@@ -398,8 +400,8 @@ def get_vote_info():
 def execute(channel, force=False):
     global force_break
     force_break = True
-    result, executed, role = w.execute(force)
     m = get_vote_info()
+    result, executed, role = w.execute(force)
     if result.startswith("Finish") or force:
         execute = "処刑"
         if force == True:
