@@ -17,6 +17,9 @@ dm_address = {}
 
 w = ww.WordWolf()
 
+voice = None
+bgm = None
+
 
 @client.event
 async def on_ready():
@@ -32,6 +35,7 @@ async def on_message(message):
     global given_time
     global ql_time
     global game_channel
+    global voice
     force_break = False
     # 「おはよう」で始まるか調べる
     if message.content.startswith("おはよう"):
@@ -60,6 +64,48 @@ async def on_message(message):
         # print(data)  # 文字列データ
         m += data
         await client.send_message(message.channel, m)
+
+    # 音声関連
+    if args[0] in ["voice", "boss"]:
+        for channel in message.server.channels:
+            if message.author in channel.voice_members:
+                # voice使用者のいるチャンネルを発見
+                voice = await client.join_voice_channel(channel)
+                m = "ボイス機能をオンにしました。終了する場合は !bye だよ。"
+                await client.send_message(message.channel, m)
+                return
+        else:
+            m = "ボイス機能を使用するボイスチャンネルに入ってから呼んでね。"
+            await client.send_message(message.channel, m)
+
+    if args[0] in ["bye"]:
+        try:
+            await voice.disconnect()
+            voice = None
+            print(type(voice))
+        except Exception:
+            m = "ｱﾜﾜﾜﾜ...(既にボイスチャンネルを離れています)"
+            await client.send_message(message.channel, m)
+
+    if args[0] in ["youtube"]:
+        global bgm
+        if argsize < 2:
+            bgm.stop()
+            bgm = None
+            m = "再生を停止しました。\nyoutubeの動画の音声を再生するには !youtube [動画URL] だよ。"
+            await client.send_message(message.channel, m)
+            return
+        if voice == None:
+            m = "!voice でボイス機能をオンラインにしてから使ってね。"
+            await client.send_message(message.channel, m)
+            return
+        if bgm != None:
+            bgm.stop()
+            bgm = None
+        m = "停止する場合は !youtube だよ。\n動画音声の再生準備中... "
+        await client.send_message(message.channel, m)
+        bgm = await voice.create_ytdl_player(args[1])
+        bgm.start()
 
     if args[0] in ["reset"]:
         if w.state != "accepting_player":
@@ -130,6 +176,7 @@ async def on_message(message):
         if w.unvoters == []:
             force_break = True
             m = "全員の投票を確認しました。\n5秒後に開票します。"
+            play_sound("yattaze.mp3")
             await client.send_message(game_channel, m)
             loop.call_later(5, execute, game_channel)
             # loop.call_later(2, wordwolf, end_time, loop, message.channel, [])
@@ -479,11 +526,16 @@ def quizwolf(end_time, loop, message_channel, precaution_time=None):
             # 残りN秒で呼ぶ
             elif precaution_time[-1] < loop.time() + 1.0:
                 if left_time > 60:
+                    if (left_time < 70):
+                        play_sound("1minute.mp3")
                     m = "残り" + str(int(left_time / 60)) + "分です。"
                 elif left_time >= 5:
+                    if left_time > 25 and left_time < 35:
+                        play_sound("30sec.mp3")
                     m = "残り" + str(int(left_time)) + "秒です。"
                 else:
                     # m = str(int(left_time))
+                    play_sound("timeup.mp3")
                     m = "制限時間を過ぎました。\n"
                 print(m)
                 print("message_channel", message_channel)
@@ -506,11 +558,28 @@ def quizwolf(end_time, loop, message_channel, precaution_time=None):
         loop.call_soon(loop.stop)  # 単に loop.stop() でもいい
 
 
+def play_sound(what):
+    """
+    whatで指定された音を再生する
+    """
+    global voice
+    if voice == None:
+        print("voice is offline.")
+        return
+    try:
+        player = voice.create_ffmpeg_player("sound/"+what)
+        player.start()
+        return
+    except Exception:
+        print("No sound found:", what)
+
+
 def wordwolf(end_time, loop, message_channel, precaution_time=None):
     left_time = end_time - loop.time()
     print(datetime.datetime.now(), left_time, "remaining")
 
     global force_break
+    global bgm
     if force_break == True:
         asyncio.ensure_future(playing(""))
         print("wordwolf: killed")
@@ -518,6 +587,12 @@ def wordwolf(end_time, loop, message_channel, precaution_time=None):
 
     # 初回起動時
     if precaution_time == None:
+        if bgm != None:
+            bgm.stop()
+            bgm = None
+            m = "動画音声の再生を停止しました（複数の音声を一度に流すとクラッシュするため）"
+            asyncio.ensure_future(send(message_channel, m))
+        play_sound("game_start.wav")
         # 警告時刻の設定
         precaution_time = []
         for i in notice_time:
@@ -544,8 +619,14 @@ def wordwolf(end_time, loop, message_channel, precaution_time=None):
             # 残りN秒で呼ぶ
             elif precaution_time[-1] < loop.time() + 1.0:
                 if left_time > 60:
+                    if (left_time < 70):
+                        play_sound("1minute.mp3")
                     m = "残り" + str(int(left_time / 60)) + "分です。"
                 elif left_time >= 10:
+                    if left_time > 25 and left_time < 35:
+                        play_sound("30sec.mp3")
+                    if left_time > 5 and left_time < 15:
+                        play_sound("10sec.mp3")
                     m = "残り" + str(int(left_time)) + "秒です。"
                 else:
                     # m = str(int(left_time))
@@ -565,6 +646,7 @@ def wordwolf(end_time, loop, message_channel, precaution_time=None):
 
     else:
         print("time is over!")
+        play_sound("timeup.mp3")
         asyncio.ensure_future(playing(""))
         m = "投票に移ってください。"
         asyncio.ensure_future(send(message_channel, m))
