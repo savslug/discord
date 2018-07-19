@@ -215,6 +215,11 @@ async def on_message(message):
             return
         execute(message.channel, True)
 
+    if args[0] in ["comeback"]:
+        comeback("wolf_comeback")
+        m = "直前のゲームの結果を「少数派逆転勝利」に書き換えました。"
+        await client.send_message(message.channel, m)
+
     if args[0] in ["seed"]:
         if w.state != "accepting_player":
             m = "そのコマンドは参加者受付中にしか実行できないよ。"
@@ -444,6 +449,44 @@ def get_vote_info():
     return m
 
 
+def dump_log(winner):
+    """
+    winner陣営勝利でinfoを書き込む
+    """
+    import pickle
+    info = w.get_info()
+    info["winner"] = winner
+
+    try:
+        with open('pickles/game_result.pickle', mode='rb') as f:
+            history = pickle.load(f)
+    except Exception:
+        history = []
+    history.append(info)
+    with open('pickles/game_result.pickle', mode='wb') as f:
+        pickle.dump(history, f)
+
+    print(history)
+
+
+def comeback(winner):
+    import pickle
+    """
+    最後に記録されたゲームの勝者をwinnerに書き換える
+    """
+    try:
+        with open('pickles/game_result.pickle', mode='rb') as f:
+            history = pickle.load(f)
+    except Exception:
+        print("FAILED: no pickle found")
+        return
+    history[-1]["winner"] = winner
+    with open('pickles/game_result.pickle', mode='wb') as f:
+        pickle.dump(history, f)
+
+    print(history)
+
+
 def execute(channel, force=False):
     global force_break
     force_break = True
@@ -464,12 +507,14 @@ def execute(channel, force=False):
             m += "に確定しました。"
             asyncio.ensure_future(send(channel, m))
             finish(channel)
+            dump_log("wolf")
             # m+="ゲームを終了します。"
         else:
             m += executed + " さんは少数派でした。\nテーマは「" + \
                 w.info["game"]["theme"][1] + \
-                "」です。\n多数派のお題を言い当てれば逆転勝利だよ。（未実装）\n"
+                "」です。\n多数派のお題を言い当てれば逆転勝利だよ。\n逆転勝利したら !comeback してね（ゲーム履歴を修正するため）"
             asyncio.ensure_future(send(channel, m))
+            dump_log("villager")
             # m+="ゲームを終了します。"
     elif result.startswith("Tie"):
         m += "投票の結果、処刑対象を一人に絞れませんでした。\n最多得票者は\n"

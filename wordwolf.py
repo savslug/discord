@@ -75,7 +75,7 @@ class WordWolf():
         self.wolfs = random.sample(self.players, self.wolf_size)
 
         # choose theme
-        self.theme = self.choose_theme(self.categories)
+        self.theme, self.category = self.choose_theme(self.categories)
 
         # create player_info
         self.initialize_info()
@@ -95,6 +95,7 @@ class WordWolf():
 
             self.info["game"] = {"seed": self.seed,
                                  "theme": self.theme,
+                                 "category": self.category,
                                  "valid_targets": copy.deepcopy(self.players),
                                  "valid_voters": copy.deepcopy(self.players)}
         # print(self.players)
@@ -220,7 +221,8 @@ class WordWolf():
             # カテゴリ選択に失敗したら
             self.categories = []
             theme = random.sample(data, 1)[0]
+        cat = theme[0]
         theme = random.sample(theme[1:], 2)
         # print(theme)
 
-        return theme
+        return theme, cat
