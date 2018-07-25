@@ -44,6 +44,8 @@ class WordWolf():
         if self.state != "accepting_player":
             return("this is not a time")
         self.players = []
+        self.wolf_size = 1
+        self.categories = []
         return len(self.players)
 
     def set_seed(self, new):
