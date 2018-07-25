@@ -150,7 +150,7 @@ async def on_message(message):
     if args[0] in ["vote"]:
         if w.state != "theme_discussion":
             m = "そのコマンドはゲーム中にしか実行できないよ。"
-            if args[1] in ["felmac", "gesu", "ゲス"]:
+            if args[1] in ["felmac"] or nickname(args[1]) in ["felmac"]:
                 m = message.author.name+"を処刑しました"
             await client.send_message(message.channel, m)
             return
@@ -369,6 +369,26 @@ async def on_message(message):
 
     if args[0] in ["finish", "fa"]:
         finish(message.channel)
+
+    if args[0] in ["outputlog"]:
+        import json
+        import pickle
+        try:
+            with open('pickles/game_result.pickle', mode='rb') as f:
+                history = pickle.load(f)
+            with open("history.json", "w") as f:
+                json.dump(history, f)
+
+            # JSONファイルを送る
+            with open("history.json", "r") as f:
+                await client.send_file(message.channel, f)
+        except Exception:
+            print("ERROR!")
+            m = "ｱﾜﾜﾜ...（json出力失敗）"
+            await client.send_message(message.channel, m)
+            return
+        m = "ゲームログをjson形式で書き出しました。"
+        await client.send_message(message.channel, m)
 
 
 import time
