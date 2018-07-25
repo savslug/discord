@@ -151,7 +151,7 @@ async def on_message(message):
         if w.state != "theme_discussion":
             m = "そのコマンドはゲーム中にしか実行できないよ。"
             if args[1] in ["felmac"] or nickname(args[1]) in ["felmac"]:
-                m = message.author.name+"を処刑しました"
+                m = message.author.name+"を処刑しました。BANポイントが1点加算されます。"
             await client.send_message(message.channel, m)
             return
         if argsize < 2:
